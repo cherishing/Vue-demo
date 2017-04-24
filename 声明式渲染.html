@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+    <title>vue</title>
+    <script type="text/javascript" src="vue.js"></script>
+  </head>
+  <body>
+  <script type="text/javascript">
+  //命令式：每一步怎么实现都要写
+  var arr = [1,2,3];
+  var newArr = [];
+  for(var i=0; i<arr.length; i++){
+    newArr.push(arr[i]*2);
+  }
+  console.log(newArr); 
+
+  //声明式： 不需要关心怎么实现
+  var a1 = [2,4,6];
+  var a2 = a1.map(function(item){
+    return item*2;
+  });
+  console.log(a2);
+  </script>
+  </body>
+</html>

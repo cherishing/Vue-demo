@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+    <title>vue</title>
+    <script type="text/javascript" src="vue.js"></script>
+    <style type="text/css">
+      *{margin:0; padding:0;}
+      ul,li{list-style: none;}
+      header{background-color:orange; height:50px;line-height:50px;}
+      header .main{width:800px; margin:0 auto;}
+      header .main h3{color:#fff; }
+      .MM{width:800px; margin:0 auto; overflow:hidden;}
+      .addTask{width:788px; height:30px; line-height:30px; border:1px solid #ccc; margin-top:10px; padding-left:10px;}
+      .teskMore{overflow:hidden;}
+      .rd{float:left; color:red; margin:12px;}
+      .taskMao{float:right;}
+      .taskMao li{float:left; margin:10px;}
+      .taskMao li a{display:block; padding:8px; border:1px solid #ccc; color:#000; text-decoration:none;}
+      .taskMao li a:hover{background-color:orange; color:#fff; border:1px solid #fff;}
+      .active{background-color:orange; color:#fff; border:1px solid #fff;}
+      .taskList li{border:1px solid #ccc; height:30px; line-height:30px; margin:10px 0; padding:0 0 0 4px;}
+      .del{float:right; background:none; border:none; margin-right:10px; font-size: 20px; color:orange; }
+      .taskMsg{color:#999;}
+      .completed{text-decoration: line-through;}
+      .notAdd{display:block; height:30px; line-height:30px; border:1px solid #ccc; margin:10px 0; font-size:14px;
+         color:#999; padding-left:10px;}
+      .editInp{height:30px; margin:0 0 0 30px; width:600px; display: none;}
+      .editing{border:none !important;}
+      .editing div{display: none;}
+      .editing .editInp{display:block;}
+      .active{background-color:orange;}
+      </style>
+  </head>
+  <body>
+  <header>
+    <div class="main">
+      <h3>任务计划表</h3>
+    </div>
+  </header>
+  <div id="content"> 
+    <div class="MM">
+    <p>继续添加任务。</p>
+    <input type="text" placeholder="提示：回车即可添加任务" class="addTask" v-on:keyup.enter="addTask" v-model="todo">
+  </div>
+  <div class="MM" v-show="list.length">
+    <div class="taskMore" >
+      <span class="rd">{{noCheckedLength}}个任务未实现</span>
+      <ul class="taskMao" id="taskMao">
+        <li><a href="#all" :class="{active:visitibilty==='all'}">所有任务</a></li>
+        <li><a href="#unfinished" :class="{active:visitibilty==='unfinished'}">未完成的任务</a></li>
+        <li><a href="#finished" :class="{active:visitibilty==='finished'}">已完成的任务</a></li>
+      </ul>
+    </div>    
+  </div>
+  <div class="MM">
+    <span>任务列表</span>
+    <span class="notAdd" v-show="!list.length">还没有添加任何的任务</span>
+    <ul class="taskList">
+      <li v-for="item in filterList" v-bind:class="{completed: item.isChecked,editing:item===editTodos}" >
+        <div>
+             <input type="checkbox" class="checkBox" v-model="item.isChecked">
+             <span class="taskMsg" @dblclick="editTodo(item)">{{item.title}}</span>
+             <button class="del"  @click="deleteTask(item)">×</button>     
+        </div>
+        <input type="text" class="editInp" 
+          v-model="item.title" 
+          v-focus="editTodos===item"
+          @blur="editTodoed(item)"
+          @keyup.enter="editTodoed(item)"
+          @keyup.esc="cancel(item)">
+      </li>
+    </ul>
+  </div>
+  </div>
+
+
+  <script type="text/javascript">
+  //用本地存储localStroage
+  var store = {
+    save(key,value){
+      localStorage.setItem(key, JSON.stringify(value));
+    },
+    fetch(key){
+      return JSON.parse(localStorage.getItem(key)||[]);
+    }
+  };
+  // var taskList1 = [
+  //   {
+  //     title: "小苏不是superman",
+  //     isChecked: true,         //默认不选中,任务完成
+  //     editTodos: ""
+  //   },
+  //   {
+  //     title: "超人归来",
+  //     isChecked: false,      //任务未完成
+  //     editTodos:""
+  //   }
+  // ];
+  // store.save("wq",taskList1);
+  var taskList = store.fetch("wq");
+  // console.log(taskList);
+
+  var vm = new Vue({
+    el: "#content",
+    data: {
+      list: taskList,
+      todo: "",
+      editTodos:"",
+      beforeTitle:"", //记录正在要编辑的任务的title
+      visitibilty: "all"  //通过这个属性值得变化对数据值进行筛选
+    },
+    watch:{  //深度监控数据
+      list: {
+        handler:function(){
+          store.save("wq", this.list);
+        },
+        deep: true
+      }
+    },
+    computed:{
+      noCheckedLength: function(){
+        return this.list.filter(function(item){
+          return !item.isChecked
+        }).length;
+      },
+      filterList: function(){
+        //找到了过滤函数就返回过滤后的数据，如果没有就返回所有的数据
+  //过滤的时候有三种情况：all  、finish、unfinished
+      var filter = {
+        all: function(list){
+          return list;
+        },
+        unfinished: function(list){
+          return list.filter(function(item){
+            return !item.isChecked;
+          });
+        },
+        finished: function(list){
+          return list.filter(function(item){
+            return item.isChecked;
+          });
+        }
+      };
+      console.log(this.visitibilty);
+      // return filter[this.visitibilty](taskList);
+        return filter[this.visitibilty]?filter[this.visitibilty](taskList):taskList;
+      }
+    },
+    methods:{
+      addTask(ev){    //添加任务
+         //事件处理函数中的this指向的是，当前这个根实例
+        this.list.push({
+          title: this.todo,
+          isChecked: false,
+        });
+        this.todo = "";
+      },
+      deleteTask(todo){ //删除任务
+        var index = this.list.indexOf(todo);
+        this.list.splice(index,1);
+      },
+      editTodo(todo){ //编辑任务
+        //编辑任务的时候记录一下这条title，为了在取消任务的时候重新给到之前的title
+        this.beforeTitle = todo.title;
+        this.editTodos = todo;
+      },
+      editTodoed(todo){ //编辑任务成功
+        this.editTodos = "";
+      },
+      cancel(todo){ //编辑失败
+        console.log(122);
+        todo.title = this.beforeTitle;
+        this.beforeTitle = "";
+        //让div显示,input隐藏
+        this.editTodos = ""
+      }
+    },
+    directives:{
+      "focus":{
+          update(el, binding){
+            if(binding.value){
+               el.focus();
+            }
+          }
+      }
+    }
+  });
+  function watchHashChange(){
+    var hash = window.location.hash.slice(1);
+    vm.visitibilty = hash;
+  }
+  watchHashChange();
+  window.addEventListener("hashchange", watchHashChange);
+  </script>
+  </body>
+</html>

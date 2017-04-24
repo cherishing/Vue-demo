@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+	<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>模态框组件</title>
+	<script type="text/javascript" src="vue.js"></script>
+	<style type="text/css">
+	*{margin:0; padding:0;}
+	.modal{width:400px; border:1px solid #ccc; box-shadow:0px 0px 10px #333; margin:40px; float:left;}
+	.modal-header{height:30px; line-height:30px; padding:10px 20px; border-bottom:1px solid #ccc;}
+	.modal-content{padding:10px 20px; border-bottom:1px solid #ccc;}
+	.modal-main{min-height:100px;}
+	.modal-footer{min-height:30px;  padding:10px 20px;}
+	.modal-footer input[type="button"]{width:80px; height:30px; line-height:30px;text-align:center; color:#fff;
+		border:0; margin-right:20px;	cursor:pointer;}
+	.modal-footer .ok{background-color:orange; float: right;}
+	.modal-footer .cancel{background-color:blue; float:right;;}
+	</style>
+	</head>
+	<body>
+	<div id="app">
+<!-- 		<div class="modal">
+			<div class="modal-header">
+				<h4>在这里添加标题</h4>
+			</div>
+			<div class="modal-content">
+				<div class="modal-main">在这里添加内容</div>
+			</div>
+			<div class="modal-footer">
+				<input type="button" value="取消" class="cancel">
+				<input type="button" value="确定" class="ok">
+			</div>
+		</div> -->
+		<!-- 定制title -->
+		<custom-modal modal-title="提示框"></custom-modal>
+		<!-- 定制内容 -->
+		<custom-modal>
+			<ul slot="modal-main">
+				<li v-for="item of list">{{item}}</li>
+			</ul>
+		</custom-modal>
+		<!-- 定制底部 -->
+		<custom-modal>
+			<div slot="modal-footer">
+				<span>确定</span>
+				<span>重置</span>
+				<span>返回</span>
+			</div>
+		</custom-modal>
+		<custom-modal @on-ok="ok"  @on-cancel="cancel"></custom-modal>
+	</div>
+	<script type="text/javascript">
+
+	/*
+		定制：
+		标题 modal-title 
+		内容 modal-main
+		底部 modal-footer
+
+		监控子组件状态变化
+		确定
+		取消
+	*/
+	Vue.component("custom-modal", {
+		props:{
+			modalTitle:{
+				type: String,
+				default: "添加标题"
+			}
+		},
+		template:`<div class="modal">
+					<div class="modal-header">
+						<h4>{{modalTitle}}</h4>
+					</div>
+					<div class="modal-content">
+						<div class="modal-main">
+							<slot name="modal-main">我是默认的内容</slot>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<slot name="modal-footer">							
+							<input type="button" value="取消" class="cancel" @click="cancelHandle">
+							<input type="button" value="确定" class="ok" @click="okHandle">
+						</slot>
+					</div>
+				</div>`,
+		methods:{
+			okHandle: function(){
+				//通知父组件，触发了
+				alert("我触发了ok");
+				this.$emit("on-ok");
+			},
+			cancelHandle: function(){
+				alert("我触发了cancel");
+				this.$emit("on-cancel");
+			}
+		}
+	});
+
+	var list = [...'ABCDE'];
+	new Vue({
+		el: "#app",
+		data: {
+			list: list
+		},
+		methods:{
+			ok: function(){
+				alert("确定了");
+			},
+			cancel: function(){
+				alert("取消了");
+			}
+		}
+	});
+	</script>
+	</body>
+</html>

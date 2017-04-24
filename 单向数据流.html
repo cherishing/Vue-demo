@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>下拉框</title>
+	<script type="text/javascript" src="vue.js"></script>
+	<style type="text/css">
+	</style>
+  </head>
+  <body>
+  <div id="app">
+  	<my-component :count="count"></my-component>
+  </div>
+  <script type="text/javascript">
+  	//先注册组件
+  	Vue.component("my-component",{
+  		props:['count'],
+  		// data(){
+  		// 	return {
+  		// 		counter: this.count //作为局部组件的data的初始值
+  		// 	}
+  		// },
+  		data(){
+  			return {
+  				counter: this.count
+  			}
+  		},
+  		computed:{
+  			counter(){
+  				return this.counter
+  			}
+  		},
+  		template: `<div>
+  					<h1>单向数据流</h1>
+  					<input type="button" value="改变count的值" @click="changeCount">
+  					{{counter}}
+  				</div>`,
+  		methods: {
+  			changeCount(){
+  				this.counter++;	
+  			}
+  		}
+  	});
+  	new Vue({
+  		el: "#app",
+  		data:{
+  			count:0
+  		}
+
+  	});
+
+
+
+  </script>
+  </body>
+</html>

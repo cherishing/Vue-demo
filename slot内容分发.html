@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+	<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>下拉框</title>
+	<script type="text/javascript" src="vue.js"></script>
+	<style type="text/css">
+	</style>
+	</head>
+	<body>
+	<div id="app">
+		<h1>自定义组件</h1>
+		<custom>
+			<!-- 当写在自定义标签之间的内容，要混合子组件模板 -->
+			<h1 slot="hd1">这是o1</h1>
+			<h1 slot="hd2">这是o2</h1>
+			<h1 slot="hd3">这是o3</h1>
+			<h1>111</h1>
+		</custom>
+	</div>
+	<script type="text/javascript">
+	Vue.component("custom",{
+		template:`
+		<div>
+			<slot>默认0</slot>         
+			<slot name="hd1">我是默认1的提醒</slot>
+			<slot name="hd2">我是默认2的提醒</slot>
+			<slot name="hd3">我是默认3的提醒</slot>
+			<p>这是第一个提醒</p>
+			<p>这是第二个提醒</p>
+			<p>这是第三个提醒</p>
+		</div>
+		`
+	});
+	new Vue({
+		el: "#app"
+	});
+
+	</script>
+	</body>
+</html>

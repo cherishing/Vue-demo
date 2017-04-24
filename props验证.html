@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+	<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>下拉框</title>
+	<script type="text/javascript" src="vue.js"></script>
+	<style type="text/css">
+	</style>
+	</head>
+	<body>
+	<div id="app">
+	<custom-props :aaa="propA"></custom-props>
+	</div>
+	<script type="text/javascript">
+
+	Vue.component("custom-props",{
+		// props:['aaa'],
+		props: {
+			aaa: {
+				type:Number,
+				required: true
+			},
+			bbb:{
+				type:String,
+				default:"abc"
+			}
+		},
+		data(){
+			return {
+				propAr:this.aaa,
+				propBr:this.bbb
+			}
+		},
+		template:`
+			<div>HaHa {{propAr}}---{{propBr}}</div>
+
+		`
+	});
+
+	new Vue({
+		el:"#app",
+		data:{
+			propA: 100
+		}
+	});
+
+	</script>
+	</body>
+</html>
